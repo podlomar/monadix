@@ -1,6 +1,6 @@
 {
   "name": "typephoon",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Functional TypeScript utility types such as Optional, Result and others.",
   "main": "dist/index.js",
   "type": "module",
@@ -9,7 +9,9 @@
     "build": "rm -rf dist && tsc",
     "prepublishOnly": "npm run build"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./result": {
       "import": "./dist/result.js",
