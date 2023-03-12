@@ -1,6 +1,6 @@
 {
   "name": "typephoon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Functional TypeScript utility types such as Optional, Result and others.",
   "main": "dist/index.js",
   "type": "module",
