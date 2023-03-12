@@ -1,4 +1,4 @@
-import { Functor } from "./functor";
+import { Functor } from "./functor.js";
 
 export interface Result<T, E> extends Functor<T> {
   map<U>(fn: (value: T) => U): Result<U, E>;
