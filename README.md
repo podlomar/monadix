@@ -2,9 +2,72 @@
 
 Functional TypeScript utility types such as Option, Result and others. Focusing of the most practical usage.
 
-## Using the Result monad
+## Table of Contents
 
-The `Result` monad is a functional programming concept that is used to handle the outcome of operations that can either succeed or fail. It is similar to the `Option` monad, but includes an error message in the case of failure.
+- [#the-option-monad](The Option Monad)
+- [#the-result-monad](The Result Monad)
+
+## The Option Monad
+
+The `Option` monad is a way to handle optional values in a functional and composable way. It provides a standard interface for dealing with values that may or may not exist, without resorting to `null` or `undefined`.
+
+To create a value that exists, use the `some` function, to create a value that does not exist, use the `none` constant:
+
+```ts
+import { some, none } from 'monadix/option';
+
+const value = some(42);
+const emptyValue = none;
+```
+
+You can then use the `map` method to transform the value:
+
+```ts
+const transformed = value.map(x => x * 2);
+```
+
+The transformed variable now contains a new `Option` value that represents the result of doubling the original value. If the original value did not exist, the transformed value will also not exist.
+
+You can use the `chain` method to `chain` operations that return `Option` values:
+
+```ts
+const result = value.chain(x => some(x * 2)).chain(x => some(x.toString()));
+```
+
+The result variable now contains a new `Option` value that represents the result of doubling the original value, and then converting it to a string. If the original value did not exist, the result will also not exist.
+
+You can use the `getOrElse` method to get the value if it exists, or a default value if it does not:
+
+```ts
+const value = some(42);
+const result = value.map(x => x * 2).getOrElse(0);
+```
+
+The result variable now contains the value 84, because the original value existed.
+
+You can use the `getOrThrow` method to get the value if it exists, or throw an error if it does not:
+
+```ts
+const value = some(42);
+const result = value.map(x => x * 2).getOrThrow();
+```
+
+The result variable now contains the value 84, because the original value existed.
+
+Finally, you can use the `isPresent` method to check if the value exists:
+
+```ts
+const value = some(42);
+if (value.isPresent()) {
+  console.log(`Value: ${value.get()}`);
+} else {
+  console.log('Value does not exist');
+}
+```
+
+## The Result monad
+
+The `Result` monad is a functional programming concept that is used to handle the outcome of operations that can either succeed or fail. It is similar to the `Option` monad, but includes an customized error message in the case of failure.
 
 Most common use of the `Result` monad is to have a function that returns some value or an error.
 

@@ -17,6 +17,10 @@
     "./result": {
       "import": "./dist/result.js",
       "types": "./dist/result.ts"
+    },
+    "./option": {
+      "import": "./dist/option.js",
+      "types": "./dist/option.ts"
     }
   },
   "repository": {
