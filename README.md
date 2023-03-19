@@ -1,6 +1,6 @@
-# typephoon
+# Monadix
 
-Functional TypeScript utility types such as Option, Result and others.
+Functional TypeScript utility types such as Option, Result and others. Focusing of the most practical usage.
 
 ## Using the Result monad
 
@@ -11,7 +11,7 @@ Most common use of the `Result` monad is to have a function that returns some va
 For example:
 
 ```ts
-import { success, fail, Result } from 'typehoon/result';
+import { success, fail, Result } from 'monadix/result';
 
 function divide(a: number, b: number): Result<number, string> {
   if (b === 0) {
@@ -27,10 +27,10 @@ Once a `Result` instance is created, you can use the `map`, `mapErr`, and `chain
 ```ts
 const okResult = divide(10, 5);
 
-const mappedResult = okResult.map(value =>value * 2);
+const mappedResult = okResult.map(value => value * 2);
 // Returns a new Result instance with the value 4
 
-const chainedResult = okResult.chain(value =>divide(value, 2));
+const chainedResult = okResult.chain(value => divide(value, 2));
 // Returns a new Result instance with the value 1
 
 const matchedResult = okResult.match({
@@ -41,7 +41,7 @@ const matchedResult = okResult.match({
 
 const failResult = divide(10, 0);
 
-const mappedError = failResult.mapErr(error =>error.toUpperCase());
+const mappedError = failResult.mapErr(error => error.toUpperCase());
 // Returns a new Result instance with the error message 'CANNOT DIVIDE BY ZERO'
 ```
 
@@ -50,7 +50,7 @@ You can also use the `getOrElse`, and `getOrThrow` methods to handle the `Result
 For example:
 
 ```ts
-import { success, fail, Result } from 'typehoon/result';
+import { success, fail, Result } from 'monadix/result';
 
 const okResult = divide(10, 5);
 
@@ -65,7 +65,7 @@ Also, you can use the `isSuccess`, `isFail` method to imperatively check for err
 For example:
 
 ```ts
-import { success, fail, Result } from 'typehoon/result';
+import { success, fail, Result } from 'monadix/result';
 
 const okResult = divide(10, 5);
 
