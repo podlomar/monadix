@@ -1,6 +1,6 @@
 # Monadix
 
-Functional TypeScript utility types such as Option, Result and others. Focusing of the most practical usage.
+Functional TypeScript utility types such as Option, Result and others. Focusing on the most practical usage.
 
 ## Table of Contents
 
@@ -57,13 +57,7 @@ const result = value.map(x => x * 2).getOrThrow();
 The result variable now contains the value 84, because the original value existed.
 
 Finally, you can use the `isPresent` method to check if the value exists:
-
-```ts
-const value = some(42);
-if (value.isPresent()) {
-  console.log(`Value: ${value.get()}`);
-} else {
-  console.log('Value does not exist');
+import { some, none } from 'monadix/option'; exist');
 }
 ```
 
@@ -144,7 +138,7 @@ if (orResult.isSuccess()) {
 
 ## Troubleshooting
 
-`TypeScript Error: Cannot find module 'monadix/opiton' or its corresponding type declarations`
+`TypeScript Error: Cannot find module 'monadix/option' or its corresponding type declarations`
 
 If you receive an error message indicating that the module cannot be found, most likely your `moduleResolution` setting in `tsconfig.json` is not configured correctly. This package requires the use of Node.js version 16 or later.
 
