@@ -16,6 +16,10 @@
     "./result": {
       "import": "./dist/result.js",
       "types": "./dist/result.ts"
+    },
+    "./optional": {
+      "import": "./dist/optional.js",
+      "types": "./dist/optional.ts"
     }
   },
   "repository": {
