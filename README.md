@@ -4,8 +4,8 @@ Functional TypeScript utility types such as Option, Result and others. Focusing 
 
 ## Table of Contents
 
-- [#the-option-monad](The Option Monad)
-- [#the-result-monad](The Result Monad)
+- [The Option Monad](#the-option-monad)
+- [The Result Monad](#the-result-monad)
 
 ## The Option Monad
 
