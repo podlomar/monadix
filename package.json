@@ -1,6 +1,6 @@
 {
   "name": "monadix",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Functional TypeScript utility types such as Option, Result and others.",
   "main": "dist/index.js",
   "type": "module",
