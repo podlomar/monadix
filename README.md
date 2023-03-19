@@ -6,6 +6,8 @@ Functional TypeScript utility types such as Option, Result and others. Focusing 
 
 - [The Option Monad](#the-option-monad)
 - [The Result Monad](#the-result-monad)
+- [Troubleshooting](#troubleshooting)
+- [Contributions](#contributions)
 
 ## The Option Monad
 
@@ -139,3 +141,32 @@ if (orResult.isSuccess()) {
 }
 // Logs 'Result is 2'
 ```
+
+## Troubleshooting
+
+`TypeScript Error: Cannot find module 'monadix/opiton' or its corresponding type declarations`
+
+If you receive an error message indicating that the module cannot be found, most likely your `moduleResolution` setting in `tsconfig.json` is not configured correctly. This package requires the use of Node.js version 16 or later.
+
+To resolve this issue, ensure that your `tsconfig.json` file includes the following setting:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "nodenext" // or "node2022"
+  }
+}
+```
+
+If you continue to experience issues, please open an issue and provide as much detail as possible about your environment and the steps you have taken to reproduce the error.
+
+## Contributions
+
+Contributions are welcome and encouraged! Here are a few guidelines to get started:
+
+1. Fork the repository and create a new branch for your contribution.
+1. Write tests for your contribution and make sure all existing tests pass.
+1. Ensure that your code adheres to the existing coding standards and conventions.
+1. Submit a pull request with a clear description of your changes.
+
+If you encounter any issues or have any questions, please feel free to open an issue or contact me.
