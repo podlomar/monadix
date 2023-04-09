@@ -1,8 +1,6 @@
-import { Functor } from "./functor.js";
+import { Monad } from "./base-types.js";
 
-export interface Option<T> extends Functor<T> {
-  map<U>(fn: (value: T) => U): Option<U>;
-  chain<U>(fn: (value: T) => Option<U>): Option<U>;
+export interface Option<T> extends Monad<T> {
   getOrElse(value: T): T;
   getOrThrow(): T;
   isPresent(): boolean;
@@ -67,3 +65,6 @@ export const none: None = new class implements Option<never> {
 }();
 
 export const some = <T>(value: T): Some<T> => new Some<T>(value);
+export const fromNullable = <T>(
+  value: T | null | undefined
+): Option<T> => (value === null || value === undefined) ? none : some(value);

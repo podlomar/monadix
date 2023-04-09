@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { some, none } from '../dist/option.js';
+import { some, none, fromNullable } from '../dist/option.js';
 
 describe('Option monad', () => {
   describe('Some object', () => {
@@ -55,4 +55,17 @@ describe('Option monad', () => {
       assert.isFalse(newOption.isPresent());
     });
   })
+
+  describe('fromNullable', () => {
+    it('should return a some instance for non-null values', () => {
+      assert.deepEqual(fromNullable(42), some(42));
+      assert.deepEqual(fromNullable('hello'), some('hello'));
+      assert.deepEqual(fromNullable(false), some(false));
+    });
+  
+    it('should return a none instance for null or undefined values', () => {
+      assert.deepEqual(fromNullable(null), none);
+      assert.deepEqual(fromNullable(undefined), none);
+    });
+  });
 });

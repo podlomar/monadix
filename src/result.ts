@@ -1,6 +1,6 @@
-import { Functor } from "./functor.js";
+import { Monad } from "./base-types.js";
 
-export interface Result<T, E> extends Functor<T> {
+export interface Result<T, E> extends Monad<T> {
   map<U>(fn: (value: T) => U): Result<U, E>;
   mapErr<F>(fn: (err: E) => F): Result<T, F>;
   chain<U, F>(fn: (value: T) => Result<U, F>): Result<U, E | F>;
@@ -101,3 +101,12 @@ class Fail<E> implements Result<never, E> {
 
 export const success = <T>(value: T): Success<T> => new Success(value);
 export const fail = <E>(error: E): Fail<E> => new Fail(error);
+
+interface FromNullable {
+  <T>(value: T | null | undefined): Result<T, null>;
+  <T, E>(value: T | null | undefined, error: E): Result<T, E>;
+}
+
+export const fromNullable: FromNullable = <T, E>(
+  value: T | null | undefined, error: E | null = null,
+): Result<T, E | null> => (value === null || value === undefined) ? fail(error) : success(value);

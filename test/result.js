@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { fail, success } from '../dist/result.js';
+import { fail, success, fromNullable } from '../dist/result.js';
 
 describe('Result monad', () => {
   describe('Success object', () => {
@@ -95,6 +95,25 @@ describe('Result monad', () => {
         fail: err => `There was an error: ${err}`
       });
       assert.equal(value, 'There was an error: error message');
+    });
+  });
+
+  describe('fromNullable', () => {
+    it('should return a success instance for non-null values', () => {
+      assert.deepEqual(fromNullable(42), success(42));
+      assert.deepEqual(fromNullable('hello'), success('hello'));
+      assert.deepEqual(fromNullable(false), success(false));
+    });
+  
+    it('should return a fail instance with the specified error for null or undefined values', () => {
+      const error = 'Value is null or undefined';
+      assert.deepEqual(fromNullable(null, error), fail(error));
+      assert.deepEqual(fromNullable(undefined, error), fail(error));
+    });
+  
+    it('should return a null error fail instance for null or undefined values when error is not specified', () => {
+      assert.deepEqual(fromNullable(null), fail(null));
+      assert.deepEqual(fromNullable(undefined), fail(null));
     });
   });
 });
