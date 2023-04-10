@@ -28,8 +28,8 @@ describe('Result monad', () => {
       assert.equal(newResult.getOrElse(), '42');
     });
 
-    it('should return the value when calling mapErr', () => {
-      const newResult = result.mapErr((err) => err.toUpperCase());
+    it('should return the value when calling orElse', () => {
+      const newResult = result.orElse((err) => err.toUpperCase());
       assert.isTrue(newResult.isSuccess());
       assert.equal(newResult.get(), 42);
     });
@@ -77,8 +77,8 @@ describe('Result monad', () => {
       assert.equal(newResult.err(), 'error message');
     });
   
-    it('should return the error message when calling mapErr', () => {
-      const newResult = result.mapErr(err => err.toUpperCase());
+    it('should return the error message when calling orElse', () => {
+      const newResult = result.orElse(err => err.toUpperCase());
       assert.isTrue(newResult.isFail());
       assert.equal(newResult.err(), 'ERROR MESSAGE');
     });

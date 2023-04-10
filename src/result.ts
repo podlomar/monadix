@@ -2,7 +2,7 @@ import { Monad } from "./base-types.js";
 
 export interface Result<T, E> extends Monad<T> {
   map<U>(fn: (value: T) => U): Result<U, E>;
-  mapErr<F>(fn: (err: E) => F): Result<T, F>;
+  orElse<F>(fn: (err: E) => F): Result<T, F>;
   chain<U, F>(fn: (value: T) => Result<U, F>): Result<U, E | F>;
   match<U>(m: { success: (succ: T) => U; fail: (err: E) => U }): U;
   isSuccess(): this is Success<T>;
@@ -22,7 +22,7 @@ class Success<T> implements Result<T, never> {
     return new Success(fn(this.value));
   }
 
-  public mapErr(): this {
+  public orElse(): this {
     return this;
   }
 
@@ -66,7 +66,7 @@ class Fail<E> implements Result<never, E> {
     return this;
   }
 
-  public mapErr<F>(fn: (err: E) => F): Fail<F> {
+  public orElse<F>(fn: (err: E) => F): Fail<F> {
     return new Fail(fn(this.error));
   }
 
