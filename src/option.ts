@@ -65,6 +65,11 @@ export const none: None = new class implements Option<never> {
 }();
 
 export const some = <T>(value: T): Some<T> => new Some<T>(value);
+
 export const fromNullable = <T>(
   value: T | null | undefined
 ): Option<T> => (value === null || value === undefined) ? none : some(value);
+
+export const fromPromise = <T>(
+  promise: Promise<T>
+): Promise<Option<T>> => promise.then(some).catch(() => none);

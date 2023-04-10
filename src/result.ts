@@ -110,3 +110,7 @@ interface FromNullable {
 export const fromNullable: FromNullable = <T, E>(
   value: T | null | undefined, error: E | null = null,
 ): Result<T, E | null> => (value === null || value === undefined) ? fail(error) : success(value);
+
+export const fromPromise = <T>(
+  promise: Promise<T>
+): Promise<Result<T, unknown>> => promise.then(success).catch((error) => fail(error));

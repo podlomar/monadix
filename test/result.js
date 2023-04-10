@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { fail, success, fromNullable } from '../dist/result.js';
+import { fail, success, fromNullable, fromPromise } from '../dist/result.js';
 
 describe('Result monad', () => {
   describe('Success object', () => {
@@ -116,5 +116,18 @@ describe('Result monad', () => {
       assert.deepEqual(fromNullable(undefined), fail(null));
     });
   });
-});
 
+  describe('fromPromise', () => {
+    it('should return a success instance containing the resolved value of the promise', async () => {
+      const promise = Promise.resolve('hello');
+      const result = await fromPromise(promise);
+      assert.deepEqual(result, success('hello'));
+    });
+  
+    it('should return a fail instance containing the rejected error of the promise', async () => {
+      const promise = Promise.reject(new Error('oops'));
+      const result = await fromPromise(promise);
+      assert.deepEqual(result, fail(new Error('oops')));
+    });
+  });
+});
