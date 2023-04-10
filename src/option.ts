@@ -3,7 +3,7 @@ import { Monad } from "./base-types.js";
 export interface Option<T> extends Monad<T> {
   getOrElse(value: T): T;
   getOrThrow(): T;
-  isPresent(): boolean;
+  isPresent(): this is Some<T>;
 }
 
 class Some<T> implements Option<T> {
