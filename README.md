@@ -6,6 +6,7 @@ Functional TypeScript utility types such as Option, Result and others. Focusing 
 
 - [The Option Monad](#the-option-monad)
 - [The Result Monad](#the-result-monad)
+- [Utility functions](#utility-functions)
 - [Troubleshooting](#troubleshooting)
 - [Contributions](#contributions)
 
@@ -65,8 +66,6 @@ if (value.isPresent()) {
   console.log(value.get())
 }
 ```
-
-
 
 ## The Result monad
 
@@ -141,6 +140,65 @@ if (orResult.isSuccess()) {
   console.error(`Error: ${result.err()`);
 }
 // Logs 'Result is 2'
+```
+
+## Utility functions
+
+There are some utility functions to bridge the world if imperative programming.
+
+### `fromNullable`
+
+The `fromNullable` function creates a new `Option` or `Result` instance from a nullable value. If the value is `null` or `undefined`, the function returns an `Option`/`Result` instance containing `none` or `fail`. If the value is not `null` or `undefined`, the function returns an `Option`/`Result` instance containing `some(value)` or `success(value)`.
+
+Example:
+
+```ts
+import { success, fail, fromNullable } from 'monadix/result';
+
+interface User {
+  name: string;
+  email: string;
+}
+
+const getUserById(id: number): User | null => {
+  // ...
+}
+
+const user = fromNullable(getUserById(42)).orElse(
+  () => fail(new Error('User not found'));
+);
+```
+
+### `fromPromise`
+
+Helps to create `Option` or `Result` from promises.
+
+Example:
+
+```ts
+import { success, fail, fromPromise, Result } from 'monadix/result';
+
+interface User {
+  name: string;
+  email: string;
+}
+
+function getUserById(id: number): Promise<User> {
+  // ...
+}
+
+const userResult = await fromPromise(getUserById(42)).orElse(
+  (error) => fail(new Error('Failed to get user: ' + error.message));
+);
+
+userResult.match({
+  success(user) {
+    console.log('Got user:', user);
+  },
+  fail(error) {
+    console.error('Failed to get user:', error);
+  }
+});
 ```
 
 ## Troubleshooting
