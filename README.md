@@ -57,9 +57,16 @@ const result = value.map(x => x * 2).getOrThrow();
 The result variable now contains the value 84, because the original value existed.
 
 Finally, you can use the `isPresent` method to check if the value exists:
-import { some, none } from 'monadix/option'; exist');
+
+```ts
+const value = some(42);
+
+if (value.isPresent()) {
+  console.log(value.get())
 }
 ```
+
+
 
 ## The Result monad
 
@@ -81,7 +88,7 @@ function divide(a: number, b: number): Result<number, string> {
 }
 ```
 
-Once a `Result` instance is created, you can use the `map`, `mapErr`, and `chain` methods to perform operations on the value or error message. The match method can be used to pattern match on the value of the `Result`.
+Once a `Result` instance is created, you can use the `map`, `orElse`, and `chain` methods to perform operations on the value or error message. The match method can be used to pattern match on the value of the `Result`.
 
 ```ts
 const okResult = divide(10, 5);
@@ -100,7 +107,7 @@ const matchedResult = okResult.match({
 
 const failResult = divide(10, 0);
 
-const mappedError = failResult.mapErr(error => error.toUpperCase());
+const mappedError = failResult.orElse(error => error.toUpperCase());
 // Returns a new Result instance with the error message 'CANNOT DIVIDE BY ZERO'
 ```
 
