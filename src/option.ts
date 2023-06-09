@@ -6,7 +6,7 @@ export interface Option<T> extends Monad<T> {
   isPresent(): this is Some<T>;
 }
 
-class Some<T> implements Option<T> {
+export class Some<T> implements Option<T> {
   private readonly value: T;
 
   public constructor(value: T) {

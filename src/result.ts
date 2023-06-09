@@ -11,7 +11,7 @@ export interface Result<T, E> extends Monad<T> {
   getOrThrow(): T;
 }
 
-class Success<T> implements Result<T, never> {
+export class Success<T> implements Result<T, never> {
   private readonly value: T;
 
   public constructor(value: T) {
@@ -55,7 +55,7 @@ class Success<T> implements Result<T, never> {
   }
 };
 
-class Fail<E> implements Result<never, E> {
+export class Fail<E> implements Result<never, E> {
   private readonly error: E;
 
   public constructor(error: E) {
