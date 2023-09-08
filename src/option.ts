@@ -79,3 +79,11 @@ export const fromNullable = <T>(
 export const fromPromise = <T>(
   promise: Promise<T>
 ): Promise<Option<T>> => promise.then(Some.of).catch(() => None);
+
+export const fromTry = <T>(fn: () => T): Option<T> => {
+  try {
+    return Some.of(fn());
+  } catch {
+    return None;
+  }
+};

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Some, None, fromNullable, fromPromise } from '../dist/option.js';
+import { Some, None, fromNullable, fromPromise, fromTry } from '../dist/option.js';
 
 describe('Option monad', () => {
   describe('Some object', () => {
@@ -32,7 +32,7 @@ describe('Option monad', () => {
     });
   });
 
-  describe('The none object', () => {
+  describe('The None object', () => {
     it('should return false for a null value', () => {
       assert.isFalse(None.isPresent());
     });
@@ -45,12 +45,12 @@ describe('Option monad', () => {
       assert.throw(() => None.getOrThrow(), 'Optional is empty');
     });
 
-    it('should return none when calling map', () => {
+    it('should return None when calling map', () => {
       const newOption = None.map(n => n.toString());
       assert.isFalse(newOption.isPresent());
     });   
 
-    it('should return none when calling chain', () => {
+    it('should return None when calling chain', () => {
       const newOption = None.chain(n => Some.of(n.toString()));
       assert.isFalse(newOption.isPresent());
     });
@@ -63,7 +63,7 @@ describe('Option monad', () => {
       assert.deepEqual(fromNullable(false), Some.of(false));
     });
   
-    it('should return a none for null or undefined values', () => {
+    it('should return None for null or undefined values', () => {
       assert.deepEqual(fromNullable(null), None);
       assert.deepEqual(fromNullable(undefined), None);
     });
@@ -76,9 +76,21 @@ describe('Option monad', () => {
       assert.deepEqual(result, Some.of('hello'));
     });
   
-    it('should return a none if the promise rejects', async () => {
+    it('should return None if the promise rejects', async () => {
       const promise = Promise.reject(new Error('oops'));
       const result = await fromPromise(promise);
+      assert.deepEqual(result, None);
+    });
+  });
+
+  describe('fromTry', () => {
+    it('should return a Some instance containing the returned value', () => {
+      const result = fromTry(() => 'hello');
+      assert.deepEqual(result, Some.of('hello'));
+    });
+  
+    it('should return None if the function throws an error', () => {
+      const result = fromTry(() => { throw new Error('oops'); });
       assert.deepEqual(result, None);
     });
   });

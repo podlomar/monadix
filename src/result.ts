@@ -126,3 +126,10 @@ export const fromPromise = <T>(
   promise: Promise<T>
 ): Promise<Result<T, unknown>> => promise.then(Success.of).catch((error) => Fail.of(error));
 
+export const fromTry = <T>(fn: () => T): Result<T, unknown> => {
+  try {
+    return Success.of(fn());
+  } catch (error) {
+    return Fail.of(error);
+  }
+}
