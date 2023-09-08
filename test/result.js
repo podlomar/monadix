@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Success, Fail, fromNullable, fromPromise, fromTry } from '../dist/result.js';
+import { Success, Fail, Results, fromNullable, fromPromise, fromTry } from '../dist/result.js';
 
 describe('Result monad', () => {
   describe('Success object', () => {
@@ -140,6 +140,46 @@ describe('Result monad', () => {
     it('should return a fail instance containing the thrown error', () => {
       const result = fromTry(() => { throw new Error('oops'); });
       assert.deepEqual(result, Fail.of(new Error('oops')));
+    });
+  });
+
+  describe('Results.filterSuccess', () => {
+    it('should return an array of success instances', () => {
+      const results = [
+        Success.of(42),
+        Fail.of('error message'),
+        Success.of('hello'),
+        Fail.of('another error message')
+      ];
+      const filtered = Results.filterSuccess(results);
+      assert.deepEqual(filtered, [42, 'hello']);
+    });
+  });
+
+  describe('Results.filterFail', () => {
+    it('should return an array of fail instances', () => {
+      const results = [
+        Success.of(42),
+        Fail.of('error message'),
+        Success.of('hello'),
+        Fail.of('another error message')
+      ];
+      const filtered = Results.filterFail(results);
+      assert.deepEqual(filtered, ['error message', 'another error message']);
+    });
+  });
+
+  describe('Results.partition', () => {
+    it('should return an object with success and fail instances', () => {
+      const results = [
+        Success.of(42),
+        Fail.of('error message'),
+        Success.of('hello'),
+        Fail.of('another error message')
+      ];
+      const { success, fail } = Results.partition(results);
+      assert.deepEqual(success, [42, 'hello']);
+      assert.deepEqual(fail, ['error message', 'another error message']);
     });
   });
 });

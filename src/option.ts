@@ -35,7 +35,7 @@ export class Some<T> implements BaseOption<T> {
     return this.value;
   }
 
-  public isPresent(): true {
+  public isPresent(): this is Some<T> {
     return true;
   }
 
@@ -44,10 +44,10 @@ export class Some<T> implements BaseOption<T> {
   }
 }
 
-type None = BaseOption<never>;
-
-export const None: None = new class implements BaseOption<never> {
-  public constructor() {}
+export class None implements BaseOption<never> {
+  public static readonly value: None = new None();
+  
+  private constructor() {}
 
   public map(): this {
     return this;
@@ -62,28 +62,38 @@ export const None: None = new class implements BaseOption<never> {
   }
 
   public getOrThrow(): never {
-    throw new Error('Optional is empty');
+    throw new Error('Option is empty');
   }
 
   public isPresent(): false {
     return false;
   }
-}();
+};
 
 export type Option<T> = Some<T> | None;
 
 export const fromNullable = <T>(
   value: T | null | undefined
-): Option<T> => (value === null || value === undefined) ? None : Some.of(value);
+): Option<T> => (value === null || value === undefined) ? None.value : Some.of(value);
 
 export const fromPromise = <T>(
   promise: Promise<T>
-): Promise<Option<T>> => promise.then(Some.of).catch(() => None);
+): Promise<Option<T>> => promise.then(Some.of).catch(() => None.value);
 
 export const fromTry = <T>(fn: () => T): Option<T> => {
   try {
     return Some.of(fn());
   } catch {
-    return None;
+    return None.value;
   }
+};
+
+interface Options {
+  filterPresent<T, E>(options: Option<T>[]): T[];
+}
+
+export const Options: Options = {
+  filterPresent: <T, E>(options: Option<T>[]): T[] => options
+    .filter((option): option is Some<T> => option.isPresent())
+    .map(option => option.get()),
 };

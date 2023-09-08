@@ -40,7 +40,7 @@ export class Success<T> implements BaseResult<T, never> {
     return success(this.value);
   }
 
-  public isSuccess(): true {
+  public isSuccess(): this is Success<T> {
     return true;
   }
   
@@ -92,7 +92,7 @@ export class Fail<E> implements BaseResult<never, E> {
     return false;
   }
   
-  public isFail(): true {
+  public isFail(): this is Fail<E> {
     return true;
   }
   
@@ -132,4 +132,36 @@ export const fromTry = <T>(fn: () => T): Result<T, unknown> => {
   } catch (error) {
     return Fail.of(error);
   }
+}
+
+export type ResultsPartition<T, E> = {
+  success: T[];
+  fail: E[];
+}
+
+interface Results {
+  filterSuccess<T, E>(results: Result<T, E>[]): T[];
+  filterFail<T, E>(results: Result<T, E>[]): E[];
+  partition<T, E>(results: Result<T, E>[]): ResultsPartition<T, E>;
+}
+
+export const Results: Results = {
+  filterSuccess: <T, E>(results: Result<T, E>[]): T[] => results
+    .filter((result): result is Success<T> => result.isSuccess())
+    .map((result) => result.get()),
+  filterFail: <T, E>(results: Result<T, E>[]): E[] => results
+    .filter((result): result is Fail<E> => result.isFail())
+    .map((result) => result.err()),
+  partition: <T, E>(results: Result<T, E>[]): ResultsPartition<T, E> => {
+    const partition = { success: [], fail: [] } as ResultsPartition<T, E>;
+    for (const result of results) {
+      if (result.isSuccess()) {
+        partition.success.push(result.get());
+      } else {
+        partition.fail.push(result.err());
+      }
+    }
+
+    return partition;
+  },
 }

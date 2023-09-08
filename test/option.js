@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Some, None, fromNullable, fromPromise, fromTry } from '../dist/option.js';
+import { Some, None, Options, fromNullable, fromPromise, fromTry } from '../dist/option.js';
 
 describe('Option monad', () => {
   describe('Some object', () => {
@@ -34,24 +34,24 @@ describe('Option monad', () => {
 
   describe('The None object', () => {
     it('should return false for a null value', () => {
-      assert.isFalse(None.isPresent());
+      assert.isFalse(None.value.isPresent());
     });
 
     it('should return the default value when calling getOrElse', () => {
-      assert.equal(None.getOrElse(0), 0);
+      assert.equal(None.value.getOrElse(0), 0);
     });
 
     it('should throw an error when calling getOrThrow', () => {
-      assert.throw(() => None.getOrThrow(), 'Optional is empty');
+      assert.throw(() => None.value.getOrThrow(), 'Option is empty');
     });
 
     it('should return None when calling map', () => {
-      const newOption = None.map(n => n.toString());
+      const newOption = None.value.map(n => n.toString());
       assert.isFalse(newOption.isPresent());
     });   
 
     it('should return None when calling chain', () => {
-      const newOption = None.chain(n => Some.of(n.toString()));
+      const newOption = None.value.chain(n => Some.of(n.toString()));
       assert.isFalse(newOption.isPresent());
     });
   })
@@ -64,8 +64,8 @@ describe('Option monad', () => {
     });
   
     it('should return None for null or undefined values', () => {
-      assert.deepEqual(fromNullable(null), None);
-      assert.deepEqual(fromNullable(undefined), None);
+      assert.deepEqual(fromNullable(null), None.value);
+      assert.deepEqual(fromNullable(undefined), None.value);
     });
   });
 
@@ -79,7 +79,7 @@ describe('Option monad', () => {
     it('should return None if the promise rejects', async () => {
       const promise = Promise.reject(new Error('oops'));
       const result = await fromPromise(promise);
-      assert.deepEqual(result, None);
+      assert.deepEqual(result, None.value);
     });
   });
 
@@ -91,7 +91,15 @@ describe('Option monad', () => {
   
     it('should return None if the function throws an error', () => {
       const result = fromTry(() => { throw new Error('oops'); });
-      assert.deepEqual(result, None);
+      assert.deepEqual(result, None.value);
+    });
+  });
+
+  describe('Options.filterPresent', () => {
+    it('should return an array of all present values', () => {
+      const options = [Some.of(1), None.value, Some.of(2), None.value, Some.of(3)];
+      const result = Options.filterPresent(options);
+      assert.deepEqual(result, [1, 2, 3]);
     });
   });
 });
