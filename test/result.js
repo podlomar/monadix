@@ -1,9 +1,9 @@
 import { assert } from 'chai';
-import { fail, success, fromNullable, fromPromise } from '../dist/result.js';
+import { Success, Fail, fromNullable, fromPromise } from '../dist/result.js';
 
 describe('Result monad', () => {
   describe('Success object', () => {
-    const result = success(42);
+    const result = Success.of(42);
 
     it('should create a Success object', () => {  
       assert.isTrue(result.isSuccess());
@@ -35,7 +35,7 @@ describe('Result monad', () => {
     });
 
     it('should return a new Success object when calling chain', () => {
-      const newResult = result.chain(n => success(n.toString()));
+      const newResult = result.chain(n => Success.of(n.toString()));
       assert.isTrue(newResult.isSuccess());
       assert.equal(newResult.get(), '42');
     });
@@ -50,7 +50,7 @@ describe('Result monad', () => {
   });
 
   describe('Fail object', () => {  
-    const result = fail('error message');
+    const result = Fail.of('error message');
     
     it('should create a Fail object', () => {
       assert.isFalse(result.isSuccess());
@@ -84,7 +84,7 @@ describe('Result monad', () => {
     });
   
     it('should return a Fail object when calling chain', () => {
-      const newResult = result.chain(n => success(n.toString()));
+      const newResult = result.chain(n => Success.of(n.toString()));
       assert.isTrue(newResult.isFail());
       assert.equal(newResult.err(), 'error message');
     });
@@ -100,20 +100,20 @@ describe('Result monad', () => {
 
   describe('fromNullable', () => {
     it('should return a success instance for non-null values', () => {
-      assert.deepEqual(fromNullable(42), success(42));
-      assert.deepEqual(fromNullable('hello'), success('hello'));
-      assert.deepEqual(fromNullable(false), success(false));
+      assert.deepEqual(fromNullable(42), Success.of(42));
+      assert.deepEqual(fromNullable('hello'), Success.of('hello'));
+      assert.deepEqual(fromNullable(false), Success.of(false));
     });
   
     it('should return a fail instance with the specified error for null or undefined values', () => {
       const error = 'Value is null or undefined';
-      assert.deepEqual(fromNullable(null, error), fail(error));
-      assert.deepEqual(fromNullable(undefined, error), fail(error));
+      assert.deepEqual(fromNullable(null, error), Fail.of(error));
+      assert.deepEqual(fromNullable(undefined, error), Fail.of(error));
     });
   
     it('should return a null error fail instance for null or undefined values when error is not specified', () => {
-      assert.deepEqual(fromNullable(null), fail(null));
-      assert.deepEqual(fromNullable(undefined), fail(null));
+      assert.deepEqual(fromNullable(null), Fail.of(null));
+      assert.deepEqual(fromNullable(undefined), Fail.of(null));
     });
   });
 
@@ -121,13 +121,13 @@ describe('Result monad', () => {
     it('should return a success instance containing the resolved value of the promise', async () => {
       const promise = Promise.resolve('hello');
       const result = await fromPromise(promise);
-      assert.deepEqual(result, success('hello'));
+      assert.deepEqual(result, Success.of('hello'));
     });
   
     it('should return a fail instance containing the rejected error of the promise', async () => {
       const promise = Promise.reject(new Error('oops'));
       const result = await fromPromise(promise);
-      assert.deepEqual(result, fail(new Error('oops')));
+      assert.deepEqual(result, Fail.of(new Error('oops')));
     });
   });
 });

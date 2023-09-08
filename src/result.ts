@@ -1,6 +1,8 @@
 import { Monad } from "./base-types.js";
 
-export interface Result<T, E> extends Monad<T> {
+// ap<U, F>(fn: Result<(value: T) => U, F>): Result<U, E | F>;
+
+interface BaseResult<T, E> extends Monad<T> {
   map<U>(fn: (value: T) => U): Result<U, E>;
   orElse<F>(fn: (err: E) => F): Result<T, F>;
   chain<U, F>(fn: (value: T) => Result<U, F>): Result<U, E | F>;
@@ -11,11 +13,15 @@ export interface Result<T, E> extends Monad<T> {
   getOrThrow(): T;
 }
 
-export class Success<T> implements Result<T, never> {
+export class Success<T> implements BaseResult<T, never> {
   private readonly value: T;
 
   public constructor(value: T) {
     this.value = value;
+  }
+
+  public static of<T>(value: T): Success<T> {
+    return new Success(value);
   }
 
   public map<U>(fn: (value: T) => U): Success<U> {
@@ -55,11 +61,15 @@ export class Success<T> implements Result<T, never> {
   }
 };
 
-export class Fail<E> implements Result<never, E> {
+export class Fail<E> implements BaseResult<never, E> {
   private readonly error: E;
 
   public constructor(error: E) {
     this.error = error;
+  }
+
+  public static of<E>(error: E): Fail<E> {
+    return new Fail(error);
   }
 
   public map(): this {
@@ -99,8 +109,7 @@ export class Fail<E> implements Result<never, E> {
   }
 };
 
-export const success = <T>(value: T): Success<T> => new Success(value);
-export const fail = <E>(error: E): Fail<E> => new Fail(error);
+export type Result<T, E> = Success<T> | Fail<E>;
 
 interface FromNullable {
   <T>(value: T | null | undefined): Result<T, null>;
@@ -109,8 +118,11 @@ interface FromNullable {
 
 export const fromNullable: FromNullable = <T, E>(
   value: T | null | undefined, error: E | null = null,
-): Result<T, E | null> => (value === null || value === undefined) ? fail(error) : success(value);
+): Result<T, E | null> => (
+  (value === null || value === undefined) ? Fail.of(error) : Success.of(value)
+);
 
 export const fromPromise = <T>(
   promise: Promise<T>
-): Promise<Result<T, unknown>> => promise.then(success).catch((error) => fail(error));
+): Promise<Result<T, unknown>> => promise.then(Success.of).catch((error) => Fail.of(error));
+
