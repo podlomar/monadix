@@ -20,10 +20,6 @@ export class Success<T> implements BaseResult<T, never> {
     this.value = value;
   }
 
-  public static of<T>(value: T): Success<T> {
-    return new Success(value);
-  }
-
   public map<U>(fn: (value: T) => U): Success<U> {
     return new Success(fn(this.value));
   }
@@ -66,10 +62,6 @@ export class Fail<E> implements BaseResult<never, E> {
 
   public constructor(error: E) {
     this.error = error;
-  }
-
-  public static of<E>(error: E): Fail<E> {
-    return new Fail(error);
   }
 
   public map(): this {
@@ -119,18 +111,18 @@ interface FromNullable {
 export const fromNullable: FromNullable = <T, E>(
   value: T | null | undefined, error: E | null = null,
 ): Result<T, E | null> => (
-  (value === null || value === undefined) ? Fail.of(error) : Success.of(value)
+  (value === null || value === undefined) ? Result.fail(error) : Result.success(value)
 );
 
 export const fromPromise = <T>(
   promise: Promise<T>
-): Promise<Result<T, unknown>> => promise.then(Success.of).catch((error) => Fail.of(error));
+): Promise<Result<T, unknown>> => promise.then(Result.success).catch((error) => Result.fail(error));
 
 export const fromTry = <T>(fn: () => T): Result<T, unknown> => {
   try {
-    return Success.of(fn());
+    return Result.success(fn());
   } catch (error) {
-    return Fail.of(error);
+    return Result.fail(error);
   }
 }
 
@@ -139,17 +131,21 @@ export type ResultsPartition<T, E> = {
   fail: E[];
 }
 
-interface Results {
-  filterSuccess<T, E>(results: Result<T, E>[]): T[];
-  filterFail<T, E>(results: Result<T, E>[]): E[];
+interface ResultBuilder {
+  success<T>(value: T): Success<T>;
+  fail<E>(error: E): Fail<E>;
+  collectSuccess<T, E>(results: Result<T, E>[]): T[];
+  collectFail<T, E>(results: Result<T, E>[]): E[];
   partition<T, E>(results: Result<T, E>[]): ResultsPartition<T, E>;
 }
 
-export const Results: Results = {
-  filterSuccess: <T, E>(results: Result<T, E>[]): T[] => results
+export const Result: ResultBuilder = {
+  success: <T>(value: T): Success<T> => new Success(value),
+  fail: <E>(error: E): Fail<E> => new Fail(error),
+  collectSuccess: <T, E>(results: Result<T, E>[]): T[] => results
     .filter((result): result is Success<T> => result.isSuccess())
     .map((result) => result.get()),
-  filterFail: <T, E>(results: Result<T, E>[]): E[] => results
+  collectFail: <T, E>(results: Result<T, E>[]): E[] => results
     .filter((result): result is Fail<E> => result.isFail())
     .map((result) => result.err()),
   partition: <T, E>(results: Result<T, E>[]): ResultsPartition<T, E> => {

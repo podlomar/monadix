@@ -15,10 +15,6 @@ export class Some<T> implements BaseOption<T> {
     this.value = value;
   }
 
-  public static of<T>(value: T): Some<T> {
-    return new Some(value);
-  }
-
   public map<U>(fn: (value: T) => U): Some<U> {
     return new Some<U>(fn(this.value));
   }
@@ -74,26 +70,30 @@ export type Option<T> = Some<T> | None;
 
 export const fromNullable = <T>(
   value: T | null | undefined
-): Option<T> => (value === null || value === undefined) ? None.value : Some.of(value);
+): Option<T> => (value === null || value === undefined) ? Option.none : Option.some(value);
 
 export const fromPromise = <T>(
   promise: Promise<T>
-): Promise<Option<T>> => promise.then(Some.of).catch(() => None.value);
+): Promise<Option<T>> => promise.then(Option.some).catch(() => Option.none);
 
 export const fromTry = <T>(fn: () => T): Option<T> => {
   try {
-    return Some.of(fn());
+    return Option.some(fn());
   } catch {
-    return None.value;
+    return Option.none;
   }
 };
 
-interface Options {
-  filterPresent<T, E>(options: Option<T>[]): T[];
+interface OptionBuilder {
+  some<T>(value: T): Some<T>;
+  readonly none: None;
+  collectPresent<T>(options: Option<T>[]): T[];
 }
 
-export const Options: Options = {
-  filterPresent: <T, E>(options: Option<T>[]): T[] => options
+export const Option: OptionBuilder = {
+  some: <T>(value: T): Some<T> => new Some(value),
+  none: None.value,
+  collectPresent: <T>(options: Option<T>[]): T[] => options
     .filter((option): option is Some<T> => option.isPresent())
     .map(option => option.get()),
 };

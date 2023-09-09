@@ -1,9 +1,9 @@
 import { assert } from 'chai';
-import { Success, Fail, Results, fromNullable, fromPromise, fromTry } from '../dist/result.js';
+import { Result, fromNullable, fromPromise, fromTry } from '../dist/result.js';
 
 describe('Result monad', () => {
   describe('Success object', () => {
-    const result = Success.of(42);
+    const result = Result.success(42);
 
     it('should create a Success object', () => {  
       assert.isTrue(result.isSuccess());
@@ -35,7 +35,7 @@ describe('Result monad', () => {
     });
 
     it('should return a new Success object when calling chain', () => {
-      const newResult = result.chain(n => Success.of(n.toString()));
+      const newResult = result.chain(n => Result.success(n.toString()));
       assert.isTrue(newResult.isSuccess());
       assert.equal(newResult.get(), '42');
     });
@@ -50,7 +50,7 @@ describe('Result monad', () => {
   });
 
   describe('Fail object', () => {  
-    const result = Fail.of('error message');
+    const result = Result.fail('error message');
     
     it('should create a Fail object', () => {
       assert.isFalse(result.isSuccess());
@@ -84,7 +84,7 @@ describe('Result monad', () => {
     });
   
     it('should return a Fail object when calling chain', () => {
-      const newResult = result.chain(n => Success.of(n.toString()));
+      const newResult = result.chain(n => Result.success(n.toString()));
       assert.isTrue(newResult.isFail());
       assert.equal(newResult.err(), 'error message');
     });
@@ -100,20 +100,20 @@ describe('Result monad', () => {
 
   describe('fromNullable', () => {
     it('should return a success instance for non-null values', () => {
-      assert.deepEqual(fromNullable(42), Success.of(42));
-      assert.deepEqual(fromNullable('hello'), Success.of('hello'));
-      assert.deepEqual(fromNullable(false), Success.of(false));
+      assert.deepEqual(fromNullable(42), Result.success(42));
+      assert.deepEqual(fromNullable('hello'), Result.success('hello'));
+      assert.deepEqual(fromNullable(false), Result.success(false));
     });
   
     it('should return a fail instance with the specified error for null or undefined values', () => {
       const error = 'Value is null or undefined';
-      assert.deepEqual(fromNullable(null, error), Fail.of(error));
-      assert.deepEqual(fromNullable(undefined, error), Fail.of(error));
+      assert.deepEqual(fromNullable(null, error), Result.fail(error));
+      assert.deepEqual(fromNullable(undefined, error), Result.fail(error));
     });
   
     it('should return a null error fail instance for null or undefined values when error is not specified', () => {
-      assert.deepEqual(fromNullable(null), Fail.of(null));
-      assert.deepEqual(fromNullable(undefined), Fail.of(null));
+      assert.deepEqual(fromNullable(null), Result.fail(null));
+      assert.deepEqual(fromNullable(undefined), Result.fail(null));
     });
   });
 
@@ -121,63 +121,63 @@ describe('Result monad', () => {
     it('should return a success instance containing the resolved value of the promise', async () => {
       const promise = Promise.resolve('hello');
       const result = await fromPromise(promise);
-      assert.deepEqual(result, Success.of('hello'));
+      assert.deepEqual(result, Result.success('hello'));
     });
   
     it('should return a fail instance containing the rejected error of the promise', async () => {
       const promise = Promise.reject(new Error('oops'));
       const result = await fromPromise(promise);
-      assert.deepEqual(result, Fail.of(new Error('oops')));
+      assert.deepEqual(result, Result.fail(new Error('oops')));
     });
   });
 
   describe('fromTry', () => {
     it('should return a success instance containing the returned value', () => {
       const result = fromTry(() => 'hello');
-      assert.deepEqual(result, Success.of('hello'));
+      assert.deepEqual(result, Result.success('hello'));
     });
 
     it('should return a fail instance containing the thrown error', () => {
       const result = fromTry(() => { throw new Error('oops'); });
-      assert.deepEqual(result, Fail.of(new Error('oops')));
+      assert.deepEqual(result, Result.fail(new Error('oops')));
     });
   });
 
-  describe('Results.filterSuccess', () => {
+  describe('Result.collectSuccess', () => {
     it('should return an array of success instances', () => {
       const results = [
-        Success.of(42),
-        Fail.of('error message'),
-        Success.of('hello'),
-        Fail.of('another error message')
+        Result.success(42),
+        Result.fail('error message'),
+        Result.success('hello'),
+        Result.fail('another error message')
       ];
-      const filtered = Results.filterSuccess(results);
+      const filtered = Result.collectSuccess(results);
       assert.deepEqual(filtered, [42, 'hello']);
     });
   });
 
-  describe('Results.filterFail', () => {
+  describe('Result.collectFail', () => {
     it('should return an array of fail instances', () => {
       const results = [
-        Success.of(42),
-        Fail.of('error message'),
-        Success.of('hello'),
-        Fail.of('another error message')
+        Result.success(42),
+        Result.fail('error message'),
+        Result.success('hello'),
+        Result.fail('another error message')
       ];
-      const filtered = Results.filterFail(results);
+      const filtered = Result.collectFail(results);
       assert.deepEqual(filtered, ['error message', 'another error message']);
     });
   });
 
-  describe('Results.partition', () => {
+  describe('Result.partition', () => {
     it('should return an object with success and fail instances', () => {
       const results = [
-        Success.of(42),
-        Fail.of('error message'),
-        Success.of('hello'),
-        Fail.of('another error message')
+        Result.success(42),
+        Result.fail('error message'),
+        Result.success('hello'),
+        Result.fail('another error message')
       ];
-      const { success, fail } = Results.partition(results);
+      const { success, fail } = Result.partition(results);
       assert.deepEqual(success, [42, 'hello']);
       assert.deepEqual(fail, ['error message', 'another error message']);
     });
