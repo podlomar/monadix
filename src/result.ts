@@ -9,7 +9,7 @@ interface BaseResult<T, E> extends Monad<T> {
   match<U>(m: { success: (succ: T) => U; fail: (err: E) => U }): U;
   isSuccess(): this is Success<T>;
   isFail(): this is Fail<E>;
-  getOrElse(value: T): T;
+  getOrElse<D>(value: D): T | D;
   getOrThrow(): T;
 }
 
@@ -88,7 +88,7 @@ export class Fail<E> implements BaseResult<never, E> {
     return true;
   }
   
-  public getOrElse<T>(value: T): T {
+  public getOrElse<D>(value: D): D {
     return value;
   }
 

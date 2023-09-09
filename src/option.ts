@@ -4,7 +4,7 @@ interface BaseOption<T> extends Monad<T> {
   isPresent(): this is Some<T>;
   map<U>(fn: (value: T) => U): Option<U>;
   chain<U, F>(fn: (value: T) => Option<U>): Option<U>;
-  getOrElse(value: T): T;
+  getOrElse<D>(value: D): T | D;
   getOrThrow(): T;
 }
 
@@ -23,7 +23,7 @@ export class Some<T> implements BaseOption<T> {
     return fn(this.value);
   }
 
-  public getOrElse(value: T): T {
+  public getOrElse(): T {
     return this.value;
   }
 
@@ -53,7 +53,7 @@ export class None implements BaseOption<never> {
     return this;
   }
 
-  public getOrElse<T>(value: T): T {
+  public getOrElse<D>(value: D): D {
     return value;
   }
 

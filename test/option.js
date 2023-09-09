@@ -14,7 +14,7 @@ describe('Option monad', () => {
     });
 
     it('should return the value when calling getOrElse', () => {
-      assert.equal(option.getOrElse(0), 42);
+      assert.equal(option.getOrElse('default'), 42);
     });
 
     it('should return the value when calling getOrThrow', () => {
@@ -38,7 +38,7 @@ describe('Option monad', () => {
     });
 
     it('should return the default value when calling getOrElse', () => {
-      assert.equal(Option.none.getOrElse(0), 0);
+      assert.equal(Option.none.getOrElse('default'), 'default');
     });
 
     it('should throw an error when calling getOrThrow', () => {
