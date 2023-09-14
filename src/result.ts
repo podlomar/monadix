@@ -92,7 +92,7 @@ export class Fail<E> implements BaseResult<never, E> {
     return value;
   }
 
-  public getOrThrow<T>(): T {
+  public getOrThrow(): never {
     throw this.error;
   }
 
